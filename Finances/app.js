@@ -19,6 +19,7 @@ class Expense {
 class DB {
     constructor() {
         let id = localStorage.getItem('id');
+        // let value = localStorage.getItem('value');
 
         if (id === null) {
             localStorage.setItem('id', 0);
@@ -39,46 +40,59 @@ class DB {
         let expenses = Array();
 
         let id = localStorage.getItem('id');
+        let i = 0
 
-        for (let i = 0; i <= id; i++) {
+        for (i; i <= id; i++) {
             let expense = JSON.parse(localStorage.getItem(i));
             if (expense === null) {
                 continue;
             }
+            expense.id = i;
             expenses.push(expense);
         }
         return expenses;
     }
+    removed(id) {
+        localStorage.removeItem(id);
+        localStorage.setItem('id', id -= 1);
+        // if (id > 0) {
+        //     id = id - 1;
+        // }
+    }
+    // decrementValueID(id){
+    //     localStorage.removeItem
+    // }
+
     search(expense) {
         let expenseFilters = Array();
 
 
         expenseFilters = this.recoveryExpense();
 
-        console.log(expense);        
+        console.log(expense);
         console.log(expenseFilters);
 
-        if(expense.year != ''){
+        if (expense.year != '') {
             console.log('Filter Year')
             expenseFilters = expenseFilters.filter(d => d.year == expense.year);
         }
-        if(expense.month != ''){
+        if (expense.month != '') {
             console.log('Filter Month')
             expenseFilters = expenseFilters.filter(d => d.month == expense.month);
         }
-        if(expense.day != ''){
+        if (expense.day != '') {
             console.log('Filter Day')
             expenseFilters = expenseFilters.filter(d => d.day == expense.day);
         }
-        if(expense.description != ''){
+        if (expense.description != '') {
             console.log('Filter Description')
             expenseFilters = expenseFilters.filter(d => d.description == expense.description);
         }
-        if(expense.type != ''){
+        if (expense.type != '') {
             console.log('Filter Type')
-            expenseFilters = expenseFilters.filter(d => d.type == expense.type) ;
+            expenseFilters = expenseFilters.filter(d => d.type == expense.type);
         }
-        if(expense.value != ''){
+        if (expense.value != '') {
             console.log('Filter Value')
             expenseFilters = expenseFilters.filter(d => d.value == expense.value);
         }
@@ -139,12 +153,15 @@ function styleFalse() {
     document.querySelector('#modal_title_div').className = 'modal-header text-danger';
 
 }
-function loadingExpenses() {
-    let expenses = Array();
-    expenses = db.recoveryExpense();
+function loadingExpenses(expenses = Array(), filter = false) {
+
+    if (expenses.length == 0 && filter == false) {
+        expenses = db.recoveryExpense();
+    }
     // console.log(expense);
 
     let listExpenses = document.querySelector('#listExpenses');
+    listExpenses.innerHTML = '';
 
     expenses.forEach(e => {
         let row = listExpenses.insertRow();
@@ -153,6 +170,19 @@ function loadingExpenses() {
         row.insertCell(1).innerHTML = e.type;
         row.insertCell(2).innerHTML = e.description;
         row.insertCell(3).innerHTML = e.value;
+        let btn = document.createElement('button');
+        btn.className = 'btn btn-danger';
+        btn.innerHTML = '<i class="fas fa-times"></i>'
+        btn.id = `ID_Expense: ${e.id}`
+        btn.onclick = function () {
+            // alert('Removed')
+            // alert(id);
+            let id = this.id.replace('ID_Expense: ', '');
+            db.removed(id);
+            window.location.reload();
+        }
+        row.insertCell(4).append(btn);
+        console.log(e);
 
     })
 }
@@ -169,17 +199,5 @@ function searchExpense() {
 
     let expenses = db.search(exp);
 
-    let listExpenses = document.querySelector('#listExpenses');
-
-    listExpenses.innerHTML = '';
-
-    expenses.forEach(e => {
-        let row = listExpenses.insertRow();
-
-        row.insertCell(0).innerHTML = `${e.year}/${e.month}/${e.day}`;
-        row.insertCell(1).innerHTML = e.type;
-        row.insertCell(2).innerHTML = e.description;
-        row.insertCell(3).innerHTML = e.value;
-
-    })
+    this.loadingExpenses(expenses, true);
 }
