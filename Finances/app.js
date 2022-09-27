@@ -50,8 +50,44 @@ class DB {
         return expenses;
     }
     search(expense) {
-        console.log(expense);
+        let expenseFilters = Array();
+
+
+        expenseFilters = this.recoveryExpense();
+
+        console.log(expense);        
+        console.log(expenseFilters);
+
+        if(expense.year != ''){
+            console.log('Filter Year')
+            expenseFilters = expenseFilters.filter(d => d.year == expense.year);
+        }
+        if(expense.month != ''){
+            console.log('Filter Month')
+            expenseFilters = expenseFilters.filter(d => d.month == expense.month);
+        }
+        if(expense.day != ''){
+            console.log('Filter Day')
+            expenseFilters = expenseFilters.filter(d => d.day == expense.day);
+        }
+        if(expense.description != ''){
+            console.log('Filter Description')
+            expenseFilters = expenseFilters.filter(d => d.description == expense.description);
+        }
+        if(expense.type != ''){
+            console.log('Filter Type')
+            expenseFilters = expenseFilters.filter(d => d.type == expense.type) ;
+        }
+        if(expense.value != ''){
+            console.log('Filter Value')
+            expenseFilters = expenseFilters.filter(d => d.value == expense.value);
+        }
+        // console.log(expenseFilters);
+        // console.log(expense);
+        // console.log(expenseFilters.filter(d => d.year == expense.year));
+        return expenseFilters;
     }
+
 }
 let db = new DB();
 
@@ -131,5 +167,19 @@ function searchExpense() {
 
     let exp = new Expense(year, month, day, type, description, value);
 
-    db.search(exp);
+    let expenses = db.search(exp);
+
+    let listExpenses = document.querySelector('#listExpenses');
+
+    listExpenses.innerHTML = '';
+
+    expenses.forEach(e => {
+        let row = listExpenses.insertRow();
+
+        row.insertCell(0).innerHTML = `${e.year}/${e.month}/${e.day}`;
+        row.insertCell(1).innerHTML = e.type;
+        row.insertCell(2).innerHTML = e.description;
+        row.insertCell(3).innerHTML = e.value;
+
+    })
 }
