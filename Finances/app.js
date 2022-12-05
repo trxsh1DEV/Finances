@@ -53,15 +53,11 @@ class DB {
         return expenses;
     }
     removed(id) {
+        // let id1 = id
         localStorage.removeItem(id);
-        localStorage.setItem('id', id -= 1);
-        // if (id > 0) {
-        //     id = id - 1;
-        // }
+        // localStorage.setItem('id', id -= 1);
     }
-    // decrementValueID(id){
-    //     localStorage.removeItem
-    // }
+
 
     search(expense) {
         let expenseFilters = Array();
@@ -96,9 +92,6 @@ class DB {
             console.log('Filter Value')
             expenseFilters = expenseFilters.filter(d => d.value == expense.value);
         }
-        // console.log(expenseFilters);
-        // console.log(expense);
-        // console.log(expenseFilters.filter(d => d.year == expense.year));
         return expenseFilters;
     }
 
@@ -178,14 +171,19 @@ function loadingExpenses(expenses = Array(), filter = false) {
             // alert('Removed')
             // alert(id);
             let id = this.id.replace('ID_Expense: ', '');
+            alert(id);
             db.removed(id);
-            window.location.reload();
+            window.location.reload()
         }
         row.insertCell(4).append(btn);
         console.log(e);
 
     })
+    // let teste = localStorage.length
+    // expenses.sort();
+    // console.log(expenses);
 }
+
 function searchExpense() {
     // console.log('oi')
     const year = document.querySelector('#ano').value;
