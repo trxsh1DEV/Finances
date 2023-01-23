@@ -1,0 +1,39 @@
+body{
+    box-sizing: border-box;
+    margin: 0;
+}
+.container{
+    max-width: 80vw;
+}
+.container h1 {
+    font-weight: 600;
+}
+
+
+@media (width < 768px){
+    .container{
+        max-width: 95vw !important;
+        /* border: 1px solid #000; */
+    }
+    .container h1{
+        font-size: 40px;
+    }
+    .container div{
+        margin-bottom: 18px;
+    }
+    .container .row{
+        margin: 0 !important;
+    }
+    .container .btn-add{
+        margin-top: 10px;
+    }
+}
+
+@media (width < 480px){
+    .container{
+        max-width: 100vw !important;
+    }
+    .container h1{
+        font-size: 35px;
+    }
+}

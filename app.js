@@ -8,9 +8,13 @@ class Expense {
         this.value = value
     }
     valiData() {
+        this.value = parseFloat(this.value);
+        this.day= parseInt(this.day);
+
         for (let i in this) {
-            if (this[i] == undefined || this[i] == '' || this[i] == null) {
-                return false;
+            // console.log(i);
+            if (!this[i] || this[i] == '' || typeof this.value !== "number" || typeof this.day !== "number") {
+                return false
             }
         }
         return true;
@@ -65,31 +69,25 @@ class DB {
 
         expenseFilters = this.recoveryExpense();
 
-        console.log(expense);
-        console.log(expenseFilters);
+        // console.log(expense);
+        // console.log(expenseFilters);
 
         if (expense.year != '') {
-            console.log('Filter Year')
             expenseFilters = expenseFilters.filter(d => d.year == expense.year);
         }
         if (expense.month != '') {
-            console.log('Filter Month')
             expenseFilters = expenseFilters.filter(d => d.month == expense.month);
         }
         if (expense.day != '') {
-            console.log('Filter Day')
             expenseFilters = expenseFilters.filter(d => d.day == expense.day);
         }
         if (expense.description != '') {
-            console.log('Filter Description')
             expenseFilters = expenseFilters.filter(d => d.description == expense.description);
         }
         if (expense.type != '') {
-            console.log('Filter Type')
             expenseFilters = expenseFilters.filter(d => d.type == expense.type);
         }
         if (expense.value != '') {
-            console.log('Filter Value')
             expenseFilters = expenseFilters.filter(d => d.value == expense.value);
         }
         return expenseFilters;
@@ -106,9 +104,6 @@ function registerExpense() {
     const description = document.querySelector('#descricao');
     const value = document.querySelector('#valor');
 
-    // console.log(year.value, month.value, day.value, type.value, description.value, value.value);
-    // console.log(mes);
-
     let expense = new Expense(
         year.value, month.value, day.value, type.value, description.value, value.value
     )
@@ -118,7 +113,6 @@ function registerExpense() {
         db.saveding(expense);
         styleTrue();
         $('#modalRegister').modal('show');
-        // registerExpense.description = '';
         description.value = '';
         year.value = '';
         day.value = '';
@@ -131,18 +125,20 @@ function registerExpense() {
     }
 }
 
-function styleTrue() {
-    document.querySelector('#modal_title').innerHTML = 'CONGRATULATIONS! Expense registered sucessfully';
+
+function styleTrue(msg1,msg2) {
+    document.querySelector('#modal_title').innerHTML = msg1 ?? 'PARABÉNS! Sua Despesa foi Cadastrada com Sucesso';
+    // document.querySelector('#modal_title').innerHTML = 'CONGRATULATIONS! Expense registered sucessfully';
     document.querySelector('#btn_2').innerHTML = 'Continue';
     document.querySelector('#btn_2').className = 'btn btn-success';
     document.querySelector('#modal_title_div').className = 'modal-header text-success';
-    document.querySelector('#modal_content').innerHTML = 'Expense registred success'
+    document.querySelector('#modal_content').innerHTML = msg2 ?? 'Despesa Registrada';
 }
 function styleFalse() {
-    document.querySelector('#modal_title').innerHTML = 'Expense was not registered successfully';
+    document.querySelector('#modal_title').innerHTML = 'OPS! Sua Despesa não pode ser cadastrada';
     document.querySelector('#btn_2').innerHTML = 'Go back and Adjust';
     document.querySelector('#btn_2').className = 'btn btn-danger';
-    document.querySelector('#modal_content').innerHTML = 'Fill in fields in white'
+    document.querySelector('#modal_content').innerHTML = 'Os campos não podem estar em branco'
     document.querySelector('#modal_title_div').className = 'modal-header text-danger';
 
 }
@@ -151,12 +147,20 @@ function loadingExpenses(expenses = Array(), filter = false) {
     if (expenses.length == 0 && filter == false) {
         expenses = db.recoveryExpense();
     }
-    // console.log(expense);
 
     let listExpenses = document.querySelector('#listExpenses');
     listExpenses.innerHTML = '';
 
     expenses.forEach(e => {
+
+        if(e.day <= 9){
+            e.day = `0${e.day}`;
+            
+        }
+        if(e.month <= 9){
+            e.month = `0${e.month}`;
+        }
+
         let row = listExpenses.insertRow();
 
         row.insertCell(0).innerHTML = `${e.year}/${e.month}/${e.day}`;
@@ -168,24 +172,19 @@ function loadingExpenses(expenses = Array(), filter = false) {
         btn.innerHTML = '<i class="fas fa-times"></i>'
         btn.id = `ID_Expense: ${e.id}`
         btn.onclick = function () {
-            // alert('Removed')
-            // alert(id);
             let id = this.id.replace('ID_Expense: ', '');
-            alert(id);
+            // alert(id);
+            styleTrue('Expense deleted successfully','Menos uma dívida pánóis');
+            $('#modalRegister').modal('show');
             db.removed(id);
-            window.location.reload()
+            searchExpense();
         }
         row.insertCell(4).append(btn);
-        console.log(e);
-
+        // console.log(e);
     })
-    // let teste = localStorage.length
-    // expenses.sort();
-    // console.log(expenses);
 }
 
 function searchExpense() {
-    // console.log('oi')
     const year = document.querySelector('#ano').value;
     const month = document.querySelector('#mes').value;
     const day = document.querySelector('#dia').value;
